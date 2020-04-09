@@ -1,0 +1,175 @@
+---
+variable name: FNCperson_info
+use objects: True
+data:
+  - Name: Nicole
+    Last Name: Catabran
+    Age: 20
+    Hobbies: Cooking
+    Likes pets: True 
+  - Name: Kevin
+    Last Name: Catabran
+    Age: 27
+    Hobbies: Gaming
+    Likes pets: True
+  - Name: Katrina
+    Last Name: Catabran
+    Age: 29
+    Hobbies: Dancing
+    Likes pets: True 
+  - Name: Ian
+    Last Name: Catabran
+    Age: 31
+    Hobbies: Watching anime
+    Likes pets: True 
+  - Name: Mike
+    Last Name: Catabran
+    Age: 33
+    Hobbies: Gaming
+    Likes pets: True 
+  - Name: Yul
+    Last Name: Catabran
+    Age: 52
+    Hobbies: Golf
+    Likes pets: False 
+  - Name: Jen
+    Last Name: Catabran
+    Age: 52
+    Hobbies: Cleaning
+    Likes pets: False 
+---
+code: |
+  FNCpersonal_info_dnu = [
+    {'First Name': 'Nicole', 'Last Name:': 'Catabran', 'Age': 20, 'Hobbies': 'Cooking', 'Likes pets' :True},
+    {'First Name':'Kevin', 'Last Name:':'Catabran', 'Age':27, 'Hobbies':'Gaming', 'Likes pets':True},
+    {'First Name':'Katrina', 'Last Name:':'Catabran', 'Age':29, 'Hobbies':'Dancing', 'Likes pets':True},
+    {'First Name':'Ian', 'Last Name:':'Catabran', 'Age':31, 'Hobbies':'Watcing Anime', 'Likes pets':True},
+    {'First Name':'Mike', 'Last Name:':'Catabran', 'Age':33, 'Hobbies':'Gaming', 'Likes pets':True},
+    {'First Name':'Yul', 'Last Name:':'Catabran', 'Age':52, 'Hobbies':'Golf', 'Likes pets':False},
+    {'First Name':'Jen', 'Last Name:':'Catabran', 'Age':52, 'Hobbies':'Cleaning', 'Likes pets':False},
+  ]
+---
+mandatory: True
+question: Personal Information for Catabran Family
+subquestion: |
+  
+  ${FNCcolumn_header}
+  ${FNCdashes}
+  %for FNCitem in FNCtable_rows:
+  ${FNCitem}
+  %endfor
+  
+  Is this information correct?
+buttons:
+  - Yes I am happy: exit
+  - Some/all of the information is incorrect: continue
+---
+code: |
+  FNCcolumn_header = ""
+  
+  for FNCitem in FNCperson_info[0]:
+    FNCcolumn_header += FNCitem + '|'
+    
+  FNCcolumn_header = FNCcolumn_header[:-1]
+---
+code: |
+  FNCdashes = '---'
+  for i in range(len(FNCperson_info[0]) - 1):
+    FNCdashes += '|---'
+---
+code: |
+  FNCtable_rows = []
+  
+  for FNCitem in FNCperson_info: 
+    MDrow = ""
+    for FNCkey in FNCitem:
+      MDrow += str(FNCitem[FNCkey]) + '|'
+    MDrow = MDrow[:-1]
+    FNCtable_rows.append(MDrow)
+---
+variable name: FNCquestions
+use objects: True
+data:
+  - FNCquestion: Is the below information correct for Nicole?
+    FNCchoices:
+      - '**First Name**: Nicole'
+      - '**Last Name**: Catabran'
+      - '**Age**: 20'
+      - '**Hobbies**: Cooking'
+      - '**Likes pets**: True'
+  - FNCquestion: Is the below information correct for Kevin?
+    FNCchoices:
+      - '**First Name**: Kevin'
+      - '**Last Name**: Catabran'
+      - '**Age**: 27'
+      - '**Hobbies**: Gaming'
+      - '**Likes pets**: True'
+  - FNCquestion: Is the below information correct for Katrina?
+    FNCchoices:
+      - '**First Name**: Katrina'
+      - '**Last Name**: Catabran'
+      - '**Age**: 29'
+      - '**Hobbies**: Dancing'
+      - '**Likes pets**: True'
+  - FNCquestion: Is the below information correct for Ian?
+    FNCchoices:
+      - '**First Name**: Ian'
+      - '**Last Name**: Catabran'
+      - '**Age**: 31'
+      - '**Hobbies**: Watching Anime'
+      - '**Likes pets**: True'
+  - FNCquestion: Is the below information correct for Mike?
+    FNCchoices:
+      - '**First Name**: Mike'
+      - '**Last Name**: Catabran'
+      - '**Age**: 33'
+      - '**Hobbies**: Gaming'
+      - '**Likes pets**: True'
+  - FNCquestion: Is the below information correct for Yul?
+    FNCchoices:
+      - '**First Name**: Yul'
+      - '**Last Name**: Catabran'
+      - '**Age**: 52'
+      - '**Hobbies**: Golf'
+      - '**Likes pets**: False'
+  - FNCquestion: Is the below information correct for Jen?
+    FNCchoices:
+      - '**First Name**: Jen'
+      - '**Last Name**: Catabran'
+      - '**Age**: 52'
+      - '**Hobbies**: Cleaning'
+      - '**Likes pets**: False'
+---
+table: FNCquestion_table
+rows:  FNCquestions
+columns:
+  - Question: |
+      row_item['FNCquestion']
+  - Selected answers: |
+      row_item['FNCanswers'].true_values()
+---
+question: |
+  ${ FNCquestions[i]['FNCquestion'] }
+fields:
+  - no label: FNCquestions[i]['FNCanswers']
+    datatype: checkboxes
+    code: FNCquestions[i]['FNCchoices']
+---
+mandatory: True
+question: Summary of correct/incorrect answers
+subquestion: |
+  # Original summary of information
+  
+  ${FNCcolumn_header}
+  ${FNCdashes}
+  %for FNCitem in FNCtable_rows:
+  ${FNCitem}
+  %endfor
+  
+  # Summary of accurate information
+  ${FNCquestion_table}
+
+buttons:
+  - Done: exit
+  - Try again: restart
+---
